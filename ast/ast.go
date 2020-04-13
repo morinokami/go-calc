@@ -1,6 +1,10 @@
 package ast
 
-import "github.com/morinokami/go.calc/token"
+import (
+	"bytes"
+
+	"github.com/morinokami/go.calc/token"
+)
 
 type Node interface {
 	TokenLiteral() string
@@ -10,6 +14,8 @@ type Node interface {
 type Expression interface {
 	Node
 }
+
+// Statements
 
 type ExpressionStatement struct {
 	Token      token.Token
@@ -24,6 +30,8 @@ func (es *ExpressionStatement) String() string {
 	return ""
 }
 
+// Expressions
+
 type IntegerLiteral struct {
 	Token token.Token
 	Value int64
@@ -31,3 +39,21 @@ type IntegerLiteral struct {
 
 func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
 func (il *IntegerLiteral) String() string       { return il.Token.Literal }
+
+type PrefixExpression struct {
+	Token    token.Token
+	Operator string
+	Right    Expression
+}
+
+func (pe *PrefixExpression) TokenLiteral() string { return pe.Token.Literal }
+func (pe *PrefixExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("(")
+	out.WriteString(pe.Operator)
+	out.WriteString(pe.Right.String())
+	out.WriteString(")")
+
+	return out.String()
+}
