@@ -39,6 +39,93 @@ func TestPrefixExpression(t *testing.T) {
 	}
 }
 
+func TestInfixExpression(t *testing.T) {
+	tests := []struct {
+		input      string
+		leftValue  int64
+		operator   string
+		rightValue int64
+	}{
+		{"5 + 5;", 5, "+", 5},
+		{"5 - 5;", 5, "-", 5},
+		{"5 * 5;", 5, "*", 5},
+		{"5 / 5;", 5, "/", 5},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		es := p.Parse()
+		checkParserErrors(t, p)
+
+		ie, ok := es.Expression.(*ast.InfixExpression)
+		if !ok {
+			t.Fatalf("ie not *ast.InfixExpression. got=%T", es.Expression)
+		}
+		if !testIntegerLiteral(t, ie.Left, tt.leftValue) {
+			return
+		}
+		if ie.Operator != tt.operator {
+			t.Fatalf("ie.Operator is not %s. got=%s", tt.operator, ie.Operator)
+		}
+		if !testIntegerLiteral(t, ie.Right, tt.rightValue) {
+			return
+		}
+	}
+}
+
+func TestOperatorPrecedence(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{
+			"-1 * 2",
+			"((-1) * 2)",
+		},
+		{
+			"--1",
+			"(-(-1))",
+		},
+		{
+			"1 + 2 + 3",
+			"((1 + 2) + 3)",
+		},
+		{
+			"1 + 2 - 3",
+			"((1 + 2) - 3)",
+		},
+		{
+			"1 * 2 * 3",
+			"((1 * 2) * 3)",
+		},
+		{
+			"1 * 2 / 3",
+			"((1 * 2) / 3)",
+		},
+		{
+			"1 + 2 / 3",
+			"(1 + (2 / 3))",
+		},
+		{
+			"1 + 2 * 3 + 4 / 5 - 6",
+			"(((1 + (2 * 3)) + (4 / 5)) - 6)",
+		},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		es := p.Parse()
+		checkParserErrors(t, p)
+
+		got := es.String()
+		if got != tt.expected {
+			t.Errorf("expected=%q, got=%q", tt.expected, got)
+		}
+	}
+}
+
 func testIntegerLiteral(t *testing.T, exp ast.Expression, value int64) bool {
 	il, ok := exp.(*ast.IntegerLiteral)
 	if !ok {
