@@ -10,10 +10,10 @@ const (
 	INT = "INT"
 
 	// Operators
-	PLUS   = "+"
-	MINUS  = "-"
-	TIMES  = "*"
-	DIVIDE = "/"
+	PLUS  = "+"
+	MINUS = "-"
+	STAR  = "*"
+	SLASH = "/"
 
 	LPAREN = "("
 	RPAREN = ")"
