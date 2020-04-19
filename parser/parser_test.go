@@ -46,10 +46,10 @@ func TestInfixExpression(t *testing.T) {
 		operator   string
 		rightValue int64
 	}{
-		{"5 + 5;", 5, "+", 5},
-		{"5 - 5;", 5, "-", 5},
-		{"5 * 5;", 5, "*", 5},
-		{"5 / 5;", 5, "/", 5},
+		{"5 + 5", 5, "+", 5},
+		{"5 - 5", 5, "-", 5},
+		{"5 * 5", 5, "*", 5},
+		{"5 / 5", 5, "/", 5},
 	}
 
 	for _, tt := range tests {
