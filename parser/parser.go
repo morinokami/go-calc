@@ -67,7 +67,7 @@ func New(l *lexer.Lexer) *Parser {
 
 func (p *Parser) Parse() *ast.ExpressionStatement {
 	es := p.parseStatement()
-	p.nextToken()
+	p.expectPeek(token.EOF)
 
 	return es
 }
